@@ -60,8 +60,6 @@ const Upload = () => {
         return;
     }
 
-
-
         if(!feedback) return setStatusText('Error : Failed to analyze resume');
 
         const feedbackText= typeof  feedback.message.content === 'string'
