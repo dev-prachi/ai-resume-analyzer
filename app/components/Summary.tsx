@@ -13,7 +13,7 @@ const Category = ( {title,score } : {title: string, score : number})=> {
              <div className="flex flex-row gap-2 items-center justify-center">
                  <p className="text-2xl">{title}</p>
                   <ScoreBadge score={score} />
-             </div>-
+             </div>
                <p className="text-2xl">
                    <span className={textColor}>{score}</span>/100
                </p>

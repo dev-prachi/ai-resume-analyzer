@@ -13,16 +13,17 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth , kv} = usePuterStore();
+  const { auth , kv , isLoading} = usePuterStore();
   const navigate=useNavigate();
   const [resumes,setResumes]= useState<Resume[]>([]);
   const [loadingResumes, setLoadingResumes ] = useState(false);
   useEffect( () => {
-    if(!auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated] );
+    if(!isLoading && !auth.isAuthenticated) navigate('/auth?next=/');
+  }, [auth.isAuthenticated, isLoading, navigate] );
 
   useEffect(() => {
-    const loadResumes = async() =>{
+      if (!auth.isAuthenticated) return;
+      const loadResumes = async() =>{
      setLoadingResumes(true);
         // console.log("loadResumes:",  loadResumes);
      const resumes= (await kv.list('resume:*',true )) as KVItem[];
@@ -31,14 +32,14 @@ export default function Home() {
          JSON.parse(resume.value) as Resume
      ))
         // console.log("auth:", auth);
-      console.log("parsedResumes");
+      console.log("parsedResumes", parsedResumes);
       setResumes(parsedResumes || []);
       setLoadingResumes(false);
     }
 
     loadResumes()
-  }, []);
-
+  }, [auth.isAuthenticated]);
+    if (isLoading) return <p>Loading...</p>;
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
     <Navbar/>
 
@@ -68,10 +69,10 @@ export default function Home() {
       ))}
     </div>
     )}
-    {!loadingResumes && resumes.length > 0 && (
+    {!loadingResumes && resumes?.length === 0 && (
         <div className="flex flex-col items-cnter justify-center mt-10 gap-4">
             <Link to="/upload" className="primary-button w-fit text-xl font-semibold">
-                Upload Rsume
+                Upload Resume
             </Link>
         </div>
     )}
